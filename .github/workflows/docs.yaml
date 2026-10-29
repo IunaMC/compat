@@ -1,0 +1,33 @@
+name: Docs
+
+# Confere os links internos (arquivos e âncoras) e o estilo de todo .md.
+on:
+  push:
+    paths: ["**/*.md", .markdownlint-cli2.yaml, .github/workflows/docs.yaml]
+  pull_request:
+    paths: ["**/*.md", .markdownlint-cli2.yaml, .github/workflows/docs.yaml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docs-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Conferir links
+        uses: lycheeverse/lychee-action@v2.9.0
+        with:
+          args: --offline --include-fragments --no-progress '**/*.md'
+          fail: true
+
+      - name: Conferir estilo
+        uses: DavidAnson/markdownlint-cli2-action@v24.2.0
+        with:
+          globs: '**/*.md'
