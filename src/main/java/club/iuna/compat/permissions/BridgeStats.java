@@ -1,57 +1,60 @@
 package club.iuna.compat.permissions;
 
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.LongAdder;
 
-/** Counters shown by {@code /iunacompat status}. */
+/**
+ * Counters shown by {@code /iunacompat status}. {@link LongAdder} keeps the hot path cheap when
+ * several threads (server, login, async commands) ask at once.
+ */
 public final class BridgeStats {
-    private final AtomicLong allowed = new AtomicLong();
-    private final AtomicLong denied = new AtomicLong();
-    private final AtomicLong undecided = new AtomicLong();
-    private final AtomicLong optionsAnswered = new AtomicLong();
-    private final AtomicLong optionsMissed = new AtomicLong();
-    private final AtomicLong errors = new AtomicLong();
+    private final LongAdder allowed = new LongAdder();
+    private final LongAdder denied = new LongAdder();
+    private final LongAdder undecided = new LongAdder();
+    private final LongAdder optionsAnswered = new LongAdder();
+    private final LongAdder optionsMissed = new LongAdder();
+    private final LongAdder errors = new LongAdder();
     private final AtomicReference<String> lastError = new AtomicReference<>();
 
     void record(Verdict verdict) {
         switch (verdict) {
-            case TRUE -> allowed.incrementAndGet();
-            case FALSE -> denied.incrementAndGet();
-            case DEFAULT -> undecided.incrementAndGet();
+            case TRUE -> allowed.increment();
+            case FALSE -> denied.increment();
+            case DEFAULT -> undecided.increment();
         }
     }
 
     void recordOption(boolean answered) {
-        (answered ? optionsAnswered : optionsMissed).incrementAndGet();
+        (answered ? optionsAnswered : optionsMissed).increment();
     }
 
     void recordError(Throwable error) {
-        errors.incrementAndGet();
+        errors.increment();
         lastError.set(error.getClass().getSimpleName() + ": " + error.getMessage());
     }
 
     public long allowed() {
-        return allowed.get();
+        return allowed.sum();
     }
 
     public long denied() {
-        return denied.get();
+        return denied.sum();
     }
 
     public long undecided() {
-        return undecided.get();
+        return undecided.sum();
     }
 
     public long optionsAnswered() {
-        return optionsAnswered.get();
+        return optionsAnswered.sum();
     }
 
     public long optionsMissed() {
-        return optionsMissed.get();
+        return optionsMissed.sum();
     }
 
     public long errors() {
-        return errors.get();
+        return errors.sum();
     }
 
     public String lastError() {
