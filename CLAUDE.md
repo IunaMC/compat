@@ -1,14 +1,14 @@
 # compat
 
-Compatibility mod for the IUNA server (Minecraft 1.21.1, NeoForge 21.1.x), server side only. Each fix is a module (`CompatModule`); the first one, `permissions`, bridges `fabric-permissions-api` (used by Fabric mods that run through Sinytra Connector) to LuckPerms.
+Mod de compatibilidade do servidor IUNA (Minecraft 1.21.1, NeoForge 21.1.x), instalado apenas no servidor. Cada correção é um módulo (`CompatModule`); o primeiro, `permissions`, faz a ponte entre a `fabric-permissions-api` (usada pelos mods Fabric que rodam pelo Sinytra Connector) e o LuckPerms.
 
-- **Language:** documentation and code are in English by owner decision for this repository; commits, PRs and issues stay in Brazilian Portuguese per the common rules. Code means identifiers, comments, log messages and config keys.
-- **Commits:** use the module or area as the scope: `feat(permissions): …`, `fix(permissions): …`, `build: …`, `build(workflows): …`, `test: …`, `docs: …`.
-- **Branches:** work on `devel/devel` (or on `devel/<task>` with a PR into it), then open a PR into `main` and merge with a merge commit (`gh pr merge --merge`). Never rebase-merge: it recreates the commits without signatures. `devel/devel` is permanent, like `main`: never delete it (no `--delete-branch` either); after the merge, run `git merge --ff-only origin/main` on it and `git push`.
-- **Version (SemVer, in `mod_version` in `gradle.properties`):** MAJOR changes behavior or requires another Minecraft/NeoForge version; MINOR is a new module or option; PATCH is a fix. Notes go in `CHANGELOG.md`. A release is published by pushing a signed `vX.Y.Z` tag (`docs/guides/publish-a-version.md`).
-- **Build and test:** `./gradlew build` (Java 21). The contract test reads the published `fabric-permissions-api`; the integration test starts the pack's server (`docs/guides/server-test.md`).
-- **Every pack, Minecraft or NeoForge update** goes through the checklist in `docs/guides/update-with-the-pack.md`.
-- **Documentation:** index in `docs/README.md`; writing standard in [IunaMC/docs](https://github.com/IunaMC/docs/blob/main/referencia/padrao-de-escrita.md). If a command, workflow or script changes, update its guide in the same commit.
+- **Idioma:** Código (identificadores, comentários, logs, chaves de config) em inglês; documentação, commits, PRs e issues em português do Brasil.
+- **Commits:** use o módulo ou a área como escopo: `feat(permissions): …`, `fix(permissions): …`, `build: …`, `build(workflows): …`, `test: …`, `docs: …`.
+- **Branches:** trabalhe na `devel/devel` (ou numa `devel/<tarefa>`, com PR para ela), depois abra um PR para a `main` e faça o merge com merge commit (`gh pr merge --merge`). Nunca use rebase-merge, porque ele recria os commits sem as assinaturas. A `devel/devel` é permanente, assim como a `main`: nunca a apague (nem com `--delete-branch`); depois do merge, execute nela `git merge --ff-only origin/main` e `git push`.
+- **Versão (SemVer, no `mod_version` do `gradle.properties`):** MAJOR muda o comportamento ou exige outra versão do Minecraft/NeoForge; MINOR é um módulo ou uma opção nova; PATCH é uma correção. As notas ficam no `MUDANCAS.md`. A release é publicada com o envio de uma tag assinada `vX.Y.Z` (`docs/guias/publicar-versao.md`).
+- **Compilação e testes:** `./gradlew build` (Java 21). O teste de contrato lê a `fabric-permissions-api` publicada; o teste de integração sobe o servidor do pack (`docs/guias/teste-no-servidor.md`).
+- **Toda atualização do pack, do Minecraft ou do NeoForge** passa pelo roteiro de `docs/guias/atualizar-com-o-pack.md`.
+- **Documentação:** índice em `docs/README.md`; padrão de escrita no [IunaMC/docs](https://github.com/IunaMC/docs/blob/main/referencia/padrao-de-escrita.md). Se um comando, workflow ou script mudar, atualize o guia correspondente no mesmo commit.
 
 <!-- regras-comuns:inicio -->
 ## Regras comuns da IunaMC

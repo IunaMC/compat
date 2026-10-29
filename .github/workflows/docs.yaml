@@ -1,6 +1,6 @@
 name: Docs
 
-# Checks internal links (files and anchors) and the style of every .md file.
+# Confere os links internos (arquivos e âncoras) e o estilo de todos os arquivos .md.
 on:
   push:
     paths: ["**/*.md", .markdownlint-cli2.yaml, .github/workflows/docs.yaml]
@@ -21,13 +21,13 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - name: Check links
+      - name: Conferir os links
         uses: lycheeverse/lychee-action@v2.9.0
         with:
           args: --offline --include-fragments --no-progress '**/*.md'
           fail: true
 
-      - name: Check style
+      - name: Conferir o estilo
         uses: DavidAnson/markdownlint-cli2-action@v24.2.0
         with:
           globs: '**/*.md'

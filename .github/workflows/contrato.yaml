@@ -1,9 +1,9 @@
 name: Contrato
 
-# Early warning: the bridge reads fabric-permissions-api through reflection, so a change in it
-# does not break the build. Every week this workflow checks (1) the shape of the newest published
-# API version and (2) whether the pack changed since the last tested version. Either one opens an
-# issue.
+# Aviso antecipado: a ponte lê a fabric-permissions-api por reflexão, de modo que uma mudança nela
+# não quebra a compilação. Toda semana, este workflow confere (1) o formato da versão mais recente
+# publicada da API e (2) se o pack mudou desde a última versão testada. Qualquer uma das duas
+# situações abre uma issue.
 on:
   schedule:
     - cron: "43 5 * * 1"
@@ -24,16 +24,16 @@ jobs:
           distribution: temurin
           java-version: 21
           cache: gradle
-      - name: Test the contract with the pack's version and the newest one
+      - name: Testar o contrato com a versão do pack e a mais recente
         run: ./gradlew test --no-daemon --tests '*FabricContractTest*' -PcontractVersions=0.3.1,latest.release
-      - name: Open an issue if the contract broke
+      - name: Abrir uma issue se o contrato quebrou
         if: failure()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          titulo="contract: fabric-permissions-api changed shape"
+          titulo="contrato: a fabric-permissions-api mudou de formato"
           if [[ -z "$(gh issue list --state open --search "$titulo in:title" --json number --jq '.[0].number')" ]]; then
-            gh issue create --title "$titulo" --body "The contract test failed with the newest published version. See the run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID. Adjust the adapter (permissions/fabric) before the pack updates to that version."
+            gh issue create --title "$titulo" --body "O teste de contrato falhou com a versão mais recente publicada. Veja a execução: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID. Ajuste o adaptador (permissions/fabric) antes que o pack passe a usar essa versão."
           fi
 
   pack:
@@ -41,16 +41,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - name: Compare the pack with tested-with.json
+      - name: Comparar o pack com o tested-with.json
         id: deriva
         continue-on-error: true
         run: python3 -I scripts/pack-drift.py | tee "$RUNNER_TEMP/deriva.txt"
-      - name: Open an issue if the pack changed
+      - name: Abrir uma issue se o pack mudou
         if: steps.deriva.outcome == 'failure'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          titulo="pack: versions changed since the last integration test"
+          titulo="pack: versões mudaram desde o último teste de integração"
           if [[ -z "$(gh issue list --state open --search "$titulo in:title" --json number --jq '.[0].number')" ]]; then
             gh issue create --title "$titulo" --body "$(cat "$RUNNER_TEMP/deriva.txt")"
           fi

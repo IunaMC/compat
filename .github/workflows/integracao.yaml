@@ -1,9 +1,9 @@
 name: Integração
 
-# Starts the real IUNA pack server (NeoForge, LuckPerms, Connector and the Fabric mods) with the
-# freshly built jar and checks the bridge end to end (scripts/integration-test.sh). It downloads
-# about 1.5 GB of mods and takes a few minutes, so it runs on PRs into main, every week (to catch
-# pack changes) and on demand.
+# Sobe o servidor real do pack IUNA (NeoForge, LuckPerms, Connector e os mods Fabric) com o jar
+# recém-compilado e confere a ponte de ponta a ponta (scripts/integration-test.sh). Como baixa
+# cerca de 1,5 GB de mods e leva alguns minutos, é executado nos PRs para a main, toda semana
+# (para detectar mudanças no pack) e sob demanda.
 on:
   pull_request:
     branches: [main]
@@ -13,7 +13,7 @@ on:
   workflow_dispatch:
     inputs:
       pack:
-        description: IunaMC/modpack branch or tag to test
+        description: Branch ou tag do IunaMC/modpack a testar
         default: main
 
 permissions:
@@ -36,16 +36,16 @@ jobs:
           java-version: 21
           cache: gradle
 
-      - name: Build the mod
+      - name: Compilar o mod
         run: ./gradlew build --no-daemon -x test
 
-      - name: Start the server and check the bridge
+      - name: Subir o servidor e conferir a ponte
         env:
           MEMORY: 5G
           PACK: ${{ inputs.pack || 'main' }}
         run: ./scripts/integration-test.sh --modpack-ref "$PACK"
 
-      - name: Upload the server log
+      - name: Guardar o log do servidor
         if: always()
         uses: actions/upload-artifact@v7
         with:
