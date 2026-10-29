@@ -1,0 +1,15 @@
+{
+  "pack": "3.9.0",
+  "minecraft": "1.21.1",
+  "neoforge": "21.1.253",
+  "mods": {
+    "banhammer": "banhammer-0.11.1+1.21.jar",
+    "styled-chat": "styled-chat-2.6.1+1.21.jar",
+    "styledplayerlist": "styledplayerlist-3.5.1+1.21.jar",
+    "essential-commands": "essential_commands-0.35.2-mc1.21.jar",
+    "easyauth": "easyauth-mc1.21-3.3.6.jar",
+    "luckperms": "LuckPerms-NeoForge-5.4.150.jar",
+    "connector": "connector-2.0.0-beta.17+1.21.1-full.jar",
+    "forgified-fabric-api": "forgified-fabric-api-0.116.15+2.3.5+1.21.1.jar"
+  }
+}
