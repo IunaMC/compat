@@ -1,0 +1,43 @@
+modLoader = "javafml"
+loaderVersion = "${loader_version_range}"
+license = "${mod_license}"
+issueTrackerURL = "https://github.com/IunaMC/issues/issues"
+
+[[mods]]
+modId = "${mod_id}"
+version = "${mod_version}"
+displayName = "${mod_name}"
+displayURL = "${mod_url}"
+authors = "${mod_authors}"
+description = '''${mod_description}'''
+
+[[dependencies.${mod_id}]]
+modId = "neoforge"
+type = "required"
+versionRange = "${neo_version_range}"
+ordering = "NONE"
+side = "SERVER"
+
+[[dependencies.${mod_id}]]
+modId = "minecraft"
+type = "required"
+versionRange = "${minecraft_version_range}"
+ordering = "NONE"
+side = "SERVER"
+
+# Optional: without LuckPerms the permissions module stays disabled.
+[[dependencies.${mod_id}]]
+modId = "luckperms"
+type = "optional"
+versionRange = "[5.4,)"
+ordering = "AFTER"
+side = "SERVER"
+
+# Optional: the Fabric permissions API embedded by Fabric mods through Sinytra Connector.
+# Only orders loading; its absence is detected at runtime.
+[[dependencies.${mod_id}]]
+modId = "fabric_permissions_api_v0"
+type = "optional"
+versionRange = "[0.1,)"
+ordering = "AFTER"
+side = "SERVER"
