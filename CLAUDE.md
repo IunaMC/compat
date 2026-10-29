@@ -10,7 +10,6 @@ Mod de compatibilidade do servidor IUNA (Minecraft 1.21.1, NeoForge 21.1.x), só
 - **Cada atualização do pack, do Minecraft ou do NeoForge** passa pelo checklist de `docs/guias/atualizar-com-o-pack.md`.
 - **Documentação:** índice em `docs/README.md`; padrão de escrita no [IunaMC/docs](https://github.com/IunaMC/docs/blob/main/referencia/padrao-de-escrita.md). Mudou comando, workflow ou script: atualize o guia no mesmo commit.
 
-
 <!-- regras-comuns:inicio -->
 ## Regras comuns da IunaMC
 
