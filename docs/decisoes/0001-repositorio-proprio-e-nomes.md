@@ -25,10 +25,11 @@ do pack.
 | Escopo | Camada geral de compatibilidade, apenas no servidor. O primeiro módulo é o `permissions`; cada nova correção é um novo módulo, sem dependências entre módulos |
 | Versões | Minecraft 1.21.1, NeoForge `[21.1.0,22)`, Java 21 |
 
-O nome genérico (`compat`), em vez de `permissions-bridge`, é intencional: o
-dono do projeto quer uma camada geral para o pack, e o `permissions` é apenas o
-primeiro módulo. Em contrapartida, o nome é menos descritivo, e cabe ao README e
-ao `/iunacompat status` explicar o que cada módulo faz.
+O nome genérico (`compat`), em vez de `permissions-bridge`, é intencional: a
+proposta é uma camada geral de compatibilidade para o pack, da qual o
+`permissions` é apenas o primeiro módulo. Em contrapartida, o nome é menos
+descritivo, e cabe ao README e ao `/iunacompat status` explicar o que cada
+módulo faz.
 
 ## Alternativas descartadas
 
