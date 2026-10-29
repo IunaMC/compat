@@ -1,0 +1,116 @@
+plugins {
+    id 'java'
+    id 'net.neoforged.moddev' version '2.0.148'
+}
+
+group = 'club.iuna'
+version = mod_version
+base.archivesName = mod_id
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(21)
+    withSourcesJar()
+}
+
+repositories {
+    mavenCentral()
+    // Only so Gradle can parse the POM of fabric-permissions-api, which imports a Fabric API BOM.
+    maven {
+        url = 'https://maven.fabricmc.net/'
+        content { includeGroup 'net.fabricmc.fabric-api' }
+    }
+}
+
+// The published fabric-permissions-api jars the contract test reads. Defaults to the version the
+// pack embeds; the scheduled workflow passes -PcontractVersions=0.3.1,latest.release.
+configurations {
+    fabricPermissionsApi {
+        canBeConsumed = false
+        canBeResolved = true
+        transitive = false
+    }
+}
+
+neoForge {
+    version = neo_version
+
+    runs {
+        server {
+            server()
+            gameDirectory = file('run')
+            programArgument '--nogui'
+        }
+    }
+
+    mods {
+        "${mod_id}" {
+            sourceSet sourceSets.main
+        }
+    }
+
+    unitTest {
+        enable()
+        testedMod = mods."${mod_id}"
+    }
+}
+
+dependencies {
+    // LuckPerms is an optional runtime dependency: the jar is never bundled.
+    compileOnly "net.luckperms:api:${luckperms_api_version}"
+
+    testImplementation "net.luckperms:api:${luckperms_api_version}"
+    testImplementation platform("org.junit:junit-bom:${junit_version}")
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation "org.mockito:mockito-core:${mockito_version}"
+    testImplementation "org.ow2.asm:asm-tree:${asm_version}"
+
+    ((findProperty('contractVersions') ?: contract_versions) as String).split(',').each { version ->
+        fabricPermissionsApi "me.lucko:fabric-permissions-api:${version.trim()}"
+    }
+}
+
+tasks.named('processResources') {
+    def props = [
+            mod_id               : mod_id,
+            mod_name             : mod_name,
+            mod_version          : mod_version,
+            mod_license          : mod_license,
+            mod_authors          : mod_authors,
+            mod_description      : mod_description,
+            mod_url              : mod_url,
+            minecraft_version_range: minecraft_version_range,
+            neo_version_range    : neo_version_range,
+            loader_version_range : loader_version_range,
+    ]
+    inputs.properties props
+    filesMatching('META-INF/neoforge.mods.toml') {
+        expand props
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 21
+}
+
+tasks.named('jar') {
+    archiveVersion = "${mod_version}-mc${minecraft_version}"
+    manifest.attributes(
+            'Implementation-Title': mod_name,
+            'Implementation-Version': mod_version,
+            'Implementation-Vendor': mod_authors,
+    )
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+    doFirst {
+        systemProperty 'fabricPermissionsApiJars', configurations.fabricPermissionsApi.resolvedConfiguration.resolvedArtifacts
+                .collect { "${it.moduleVersion.id.version}=${it.file}" }.join(',')
+    }
+    testLogging {
+        events 'passed', 'skipped', 'failed'
+        exceptionFormat = 'full'
+    }
+}
