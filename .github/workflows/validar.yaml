@@ -1,8 +1,8 @@
 name: Validar
 
-# Compila, roda os testes unitários e o teste de contrato e confere a versão. O teste de
-# integração (sobe o servidor do pack) fica no workflow Integração, para que uma mudança
-# pequena não baixe 1,5 GB de mods.
+# Builds, runs the unit tests and the contract test, and checks the version. The integration
+# test (which starts the pack's server) lives in the Integração workflow, so that a small change
+# does not download 1.5 GB of mods.
 on:
   push:
     branches: [main, devel/**]
@@ -31,22 +31,22 @@ jobs:
           java-version: 21
           cache: gradle
 
-      # O jar do wrapper roda na máquina de quem compila: confere o hash contra a lista oficial.
+      # The wrapper jar runs on the builder's machine: check its hash against the official list.
       - uses: gradle/actions/wrapper-validation@v6
 
-      - name: Conferir a versão
+      - name: Check the version
         run: |
           versao="$(sed -n 's/^mod_version=//p' gradle.properties)"
           if ! [[ "$versao" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
-            echo "::error file=gradle.properties::Versão inválida: '$versao' (esperado algo como 1.2.3 ou 1.2.3-beta.1)"
+            echo "::error file=gradle.properties::Invalid version: '$versao' (expected something like 1.2.3 or 1.2.3-beta.1)"
             exit 1
           fi
-          if ! grep -qE "^## ${versao//./\\.}( |$)" MUDANCAS.md; then
-            echo "::error file=MUDANCAS.md::Falta a seção '## $versao' no MUDANCAS.md"
+          if ! grep -qE "^## ${versao//./\\.}( |$)" CHANGELOG.md; then
+            echo "::error file=CHANGELOG.md::Missing section '## $versao' in CHANGELOG.md"
             exit 1
           fi
 
-      - name: Compilar e testar
+      - name: Build and test
         run: ./gradlew build --no-daemon
 
       - uses: actions/upload-artifact@v7
@@ -55,7 +55,7 @@ jobs:
           path: build/libs/iunacompat-*-mc*.jar
           retention-days: 14
 
-      - name: Relatório dos testes
+      - name: Test report
         if: failure()
         uses: actions/upload-artifact@v7
         with:
@@ -72,28 +72,28 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Conferir origem e versão
+      - name: Check source branch and version
         env:
           ORIGEM: ${{ github.head_ref }}
         run: |
           if [[ "$ORIGEM" != devel/devel && "$ORIGEM" != docs/* ]]; then
-            echo "::error::A main só recebe PR da devel/devel ou da docs/*, e este vem de '$ORIGEM'."
+            echo "::error::main only accepts PRs from devel/devel or docs/*, and this one comes from '$ORIGEM'."
             exit 1
           fi
           nova="$(sed -n 's/^mod_version=//p' gradle.properties)"
           antiga="$(git show origin/main:gradle.properties | sed -n 's/^mod_version=//p')"
           if [[ "$nova" == *-* ]]; then
-            echo "::error file=gradle.properties::A main só recebe versão estável, e '$nova' é beta."
+            echo "::error file=gradle.properties::main only accepts stable versions, and '$nova' is a beta."
             exit 1
           fi
           if ! git diff --quiet origin/main HEAD -- src build.gradle gradle.properties settings.gradle scripts/integration; then
             if [[ "$nova" == "$antiga" ]]; then
-              echo "::error file=gradle.properties::O código mudou, mas a versão continua $antiga. Suba o mod_version e escreva o MUDANCAS.md."
+              echo "::error file=gradle.properties::The code changed, but the version is still $antiga. Bump mod_version and write CHANGELOG.md."
               exit 1
             fi
             if [[ "$(printf '%s\n%s\n' "$antiga" "$nova" | sort -V | tail -1)" != "$nova" ]]; then
-              echo "::error file=gradle.properties::A versão $nova é menor que a da main ($antiga)."
+              echo "::error file=gradle.properties::Version $nova is lower than main's ($antiga)."
               exit 1
             fi
           fi
-          echo "Origem $ORIGEM, versão $antiga -> $nova"
+          echo "Source $ORIGEM, version $antiga -> $nova"
