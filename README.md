@@ -1,67 +1,68 @@
 # IUNA Compat
 
-Camada de compatibilidade só de servidor para o [pack IUNA](https://github.com/IunaMC/modpack)
-(Minecraft 1.21.1, NeoForge 21.1.x). Cada correção é um módulo independente.
+Server-side compatibility layer for the [IUNA pack](https://github.com/IunaMC/modpack)
+(Minecraft 1.21.1, NeoForge 21.1.x). Each fix is an independent module.
 
-[English](README.en.md)
+[Português](README.pt-BR.md)
 
-## Módulos
+## Modules
 
-| Módulo | O que resolve |
+| Module | What it fixes |
 | --- | --- |
-| `permissions` | Liga a `fabric-permissions-api` ao LuckPerms. Mods Fabric que rodam pelo Sinytra Connector (Banhammer, Styled Chat, Styled Player List, Essential Commands, EasyAuth) consultam nós como `banhammer.duration.1d`, mas o LuckPerms para NeoForge só responde à `PermissionAPI` do NeoForge e aos nós `command.*`. Sem este mod, esses nós são ignorados. |
+| `permissions` | Bridges `fabric-permissions-api` to LuckPerms. Fabric mods running through Sinytra Connector (Banhammer, Styled Chat, Styled Player List, Essential Commands, EasyAuth) check nodes such as `banhammer.duration.1d`, but LuckPerms for NeoForge only answers NeoForge's `PermissionAPI` and the `command.*` nodes. Without this mod, those nodes are ignored. |
 
-## Requisitos
+## Requirements
 
-- Minecraft 1.21.1 e NeoForge 21.1.x.
-- LuckPerms 5.4 ou mais novo, para o módulo `permissions`. Sem ele (ou sem nenhum
-  mod Fabric que embuta a `fabric-permissions-api`) o módulo fica parado e
-  avisa no log; o servidor se comporta como sem o mod.
-- Só no servidor. O jogador não instala nada.
+- Minecraft 1.21.1 and NeoForge 21.1.x.
+- LuckPerms 5.4 or newer for the `permissions` module. Without it (or without any
+  Fabric mod that embeds `fabric-permissions-api`), the module stays idle and
+  says so in the log; the server behaves as if the mod were not installed.
+- Server side only. Players install nothing.
 
-## Como funciona
+## How it works
 
-O mod registra ouvintes nos quatro eventos da `fabric-permissions-api`
-(`PermissionCheckEvent`, `OptionRequestEvent` e as duas versões offline) e
-responde pela API pública do LuckPerms, como o ouvinte oficial do LuckPerms
-para Fabric. Quando o LuckPerms não define o nó, a resposta é "sem opinião" e o
-mod consultado mantém o próprio padrão: ligar o mod não muda nada até alguém
-gravar um nó. O porquê de cada escolha está em [`docs/`](docs/README.md).
+The mod registers listeners on the four `fabric-permissions-api` events
+(`PermissionCheckEvent`, `OptionRequestEvent` and their two offline variants)
+and answers through the LuckPerms public API, the same way the official
+LuckPerms Fabric listener does. When LuckPerms does not define a node, the
+answer is "no opinion" and the calling mod keeps its own default: installing the
+mod changes nothing until someone sets a node. The reasoning behind each choice
+is in [`docs/`](docs/README.md).
 
-## Configuração
+## Configuration
 
-`config/iunacompat-common.toml`, criado na primeira subida.
+`config/iunacompat-common.toml`, created on first start.
 
-| Chave | Padrão | Efeito |
+| Key | Default | Effect |
 | --- | --- | --- |
-| `permissions.enabled` | `true` | Liga ou desliga o módulo |
-| `permissions.options` | `true` | Responde também opções (meta, prefixo e sufixo) |
-| `permissions.offline` | `true` | Responde também consultas de jogadores offline |
-| `permissions.registerKnownNodes` | `true` | Apresenta ao LuckPerms os nós conhecidos, para o autocompletar e o editor web (não concede nada) |
-| `debug.logChecks` | `false` | Registra cada consulta no log (muito verboso) |
+| `permissions.enabled` | `true` | Turns the module on or off |
+| `permissions.options` | `true` | Also answers option queries (meta, prefix and suffix) |
+| `permissions.offline` | `true` | Also answers queries about offline players |
+| `permissions.registerKnownNodes` | `true` | Registers the known nodes with LuckPerms for tab completion and the web editor (grants nothing) |
+| `debug.logChecks` | `false` | Logs every query (very verbose) |
 
-## Diagnóstico
+## Diagnostics
 
-Pelo console ou com nível de operador 4:
+From the console or with operator level 4:
 
 ```text
 /iunacompat status
-/iunacompat check <uuid> <nó> [online]
-/iunacompat option <uuid> <chave> [online]
+/iunacompat check <uuid> <node> [online]
+/iunacompat option <uuid> <key> [online]
 ```
 
-`check` e `option` perguntam à API do Fabric como um mod pergunta, então a
-resposta é a que o Banhammer, o Styled Chat e os outros recebem.
+`check` and `option` query the Fabric API the same way a mod does, so the answer
+is exactly what Banhammer, Styled Chat and the others receive.
 
-## Compilar
+## Build
 
 ```sh
 ./gradlew build
 ```
 
-Java 21. O jar sai em `build/libs/`. Os testes e o teste de integração estão em
-[`docs/guias`](docs/README.md#guias).
+Requires Java 21. The jar is written to `build/libs/`. The tests and the
+integration test are covered in [`docs/guides`](docs/README.md#guides).
 
-## Licença
+## License
 
 [MIT](LICENSE).
