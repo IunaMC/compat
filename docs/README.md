@@ -1,42 +1,42 @@
-# Documentation
+# Documentação
 
-Documentation for the `IUNA Compat` mod. It follows the writing standard of
+Documentação do mod `IUNA Compat`, que segue o padrão de escrita do
 [IunaMC/docs](https://github.com/IunaMC/docs/blob/main/referencia/padrao-de-escrita.md).
-By owner decision, the code, comments, logs and documentation of this repository
-are in English.
+O código (identificadores, comentários, logs e chaves de config) fica em inglês,
+e a documentação, em português do Brasil.
 
-## Guides
+## Guias
 
-| Guide | Purpose |
+| Guia | Finalidade |
 | --- | --- |
-| [Build and test](guides/build-and-test.md) | Build the mod and run the unit and contract tests |
-| [Server test](guides/server-test.md) | Start the pack's server with the mod and check the bridge end to end |
-| [Publish a version](guides/publish-a-version.md) | Take a change from `devel/devel` to a GitHub release |
-| [Add to the pack](guides/add-to-the-pack.md) | Add the release jar to the packwiz pack |
-| [Update with the pack](guides/update-with-the-pack.md) | What to do when the pack, Minecraft or NeoForge changes |
-| [Add a module](guides/add-a-module.md) | Add another compatibility fix |
+| [Compilar e testar](guias/compilar-e-testar.md) | Compilar o mod e executar os testes unitários e o teste de contrato |
+| [Teste no servidor](guias/teste-no-servidor.md) | Subir o servidor do pack com o mod e conferir a ponte de ponta a ponta |
+| [Publicar uma versão](guias/publicar-versao.md) | Levar uma mudança da `devel/devel` até uma release no GitHub |
+| [Entrar no pack](guias/entrar-no-pack.md) | Incluir o jar da release no pack do packwiz |
+| [Atualizar com o pack](guias/atualizar-com-o-pack.md) | O que fazer quando o pack, o Minecraft ou o NeoForge mudam |
+| [Adicionar um módulo](guias/adicionar-modulo.md) | Incluir outra correção de compatibilidade |
 
-## Reference
+## Referência
 
-| Page | Contents |
+| Página | Conteúdo |
 | --- | --- |
-| [Requirements](reference/requirements.md) | What the mod must do and what it does not do |
-| [Code findings](reference/code-findings.md) | What was read in the jars and the open-source projects, with the class and the excerpt |
-| [Workflows](reference/workflows.md) | What each workflow does and when it runs |
+| [Requisitos](referencia/requisitos.md) | O que o mod deve fazer e o que fica fora do escopo |
+| [Confirmações no código](referencia/confirmacoes-no-codigo.md) | O que foi lido nos jars e nos projetos de código aberto, com a classe e o trecho |
+| [Workflows](referencia/workflows.md) | O que cada workflow faz e quando é executado |
 
-## Explanation
+## Explicação
 
-| Page | Contents |
+| Página | Conteúdo |
 | --- | --- |
-| [Architecture and plan](explanation/architecture.md) | How the pieces fit together, the execution plan and the maintenance chain |
+| [Arquitetura e plano](explicacao/arquitetura.md) | Como as peças se encaixam, o plano de execução e a cadeia de manutenção |
 
-## Decisions
+## Decisões
 
-| Decision | Subject |
+| Decisão | Assunto |
 | --- | --- |
-| [0001](decisions/0001-own-repository-and-names.md) | Own repository, name, identifier, package, license and modules |
-| [0002](decisions/0002-native-neoforge-mod-with-reflection.md) | Native NeoForge mod, Fabric API through reflection |
-| [0003](decisions/0003-fail-safe-and-dependencies.md) | Optional LuckPerms and failure without side effects |
-| [0004](decisions/0004-distribution-via-github-release.md) | Distribution through the GitHub release, no CurseForge or Modrinth |
-| [0005](decisions/0005-versioning-and-release.md) | SemVer, branches and signed-tag releases |
-| [0006](decisions/0006-tests-and-breakage-detection.md) | Tests and early breakage detection |
+| [0001](decisoes/0001-repositorio-proprio-e-nomes.md) | Repositório próprio, nome, identificador, pacote, licença e módulos |
+| [0002](decisoes/0002-mod-neoforge-nativo-com-reflexao.md) | Mod NeoForge nativo, com a API do Fabric acessada por reflexão |
+| [0003](decisoes/0003-falha-segura-e-dependencias.md) | LuckPerms opcional e falha sem efeito colateral |
+| [0004](decisoes/0004-distribuicao-pela-release-do-github.md) | Distribuição pela release do GitHub, sem CurseForge nem Modrinth |
+| [0005](decisoes/0005-versao-e-release.md) | SemVer, branches e releases por tag assinada |
+| [0006](decisoes/0006-testes-e-deteccao-de-quebra.md) | Testes e detecção antecipada de quebras |
