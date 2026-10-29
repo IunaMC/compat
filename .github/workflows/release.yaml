@@ -1,9 +1,9 @@
 name: Release
 
-# Dispara ao empurrar uma tag vX.Y.Z (estável, só de commit da main) ou vX.Y.Z-beta.N (só de
-# commit da devel/devel). A tag tem que ser anotada e assinada (GitHub: "verified"), e a versão
-# dela tem que ser a do gradle.properties. O jar sai na release com o SHA-256 e a atestação de
-# procedência do GitHub (assinatura Sigstore do build).
+# Runs when a tag vX.Y.Z (stable, only from a main commit) or vX.Y.Z-beta.N (only from a
+# devel/devel commit) is pushed. The tag must be annotated and signed (GitHub: "verified"), and
+# its version must match gradle.properties. The jar is published on the release with the SHA-256
+# and GitHub's provenance attestation (Sigstore signature of the build).
 on:
   push:
     tags: ["v*"]
@@ -27,33 +27,33 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Conferir a tag
+      - name: Check the tag
         id: tag
         run: |
           tag="$GITHUB_REF_NAME"
           versao="${tag#v}"
           if ! [[ "$versao" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-beta\.[0-9]+)?$ ]]; then
-            echo "::error::A tag '$tag' não é vX.Y.Z nem vX.Y.Z-beta.N."
+            echo "::error::Tag '$tag' is neither vX.Y.Z nor vX.Y.Z-beta.N."
             exit 1
           fi
           if [[ "$(sed -n 's/^mod_version=//p' gradle.properties)" != "$versao" ]]; then
-            echo "::error::A tag $tag não bate com o mod_version do gradle.properties."
+            echo "::error::Tag $tag does not match mod_version in gradle.properties."
             exit 1
           fi
 
-          # Tag anotada e verificada pelo GitHub (assinatura GPG ou SSH da pessoa que a criou).
+          # Annotated tag verified by GitHub (GPG or SSH signature of the person who created it).
           tipo="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$tag" --jq .object.type)"
           if [[ "$tipo" != tag ]]; then
-            echo "::error::A tag $tag é leve. Crie com: git tag -s $tag -m ..."
+            echo "::error::Tag $tag is lightweight. Create it with: git tag -s $tag -m ..."
             exit 1
           fi
           objeto="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$tag" --jq .object.sha)"
           if [[ "$(gh api "repos/$GITHUB_REPOSITORY/git/tags/$objeto" --jq .verification.verified)" != true ]]; then
-            echo "::error::A tag $tag não está assinada ou o GitHub não reconhece a assinatura."
+            echo "::error::Tag $tag is not signed, or GitHub does not recognize the signature."
             exit 1
           fi
 
-          # Estável só da main, beta só da devel/devel.
+          # Stable only from main, beta only from devel/devel.
           if [[ "$versao" == *-* ]]; then
             origem=origin/devel/devel
             echo "prerelease=--prerelease" >> "$GITHUB_OUTPUT"
@@ -61,11 +61,11 @@ jobs:
             origem=origin/main
           fi
           if ! git merge-base --is-ancestor "$GITHUB_SHA" "$origem"; then
-            echo "::error::O commit da tag $tag não está na ${origem#origin/}."
+            echo "::error::The commit of tag $tag is not on ${origem#origin/}."
             exit 1
           fi
           if gh release view "$tag" >/dev/null 2>&1; then
-            echo "::error::A release $tag já existe."
+            echo "::error::Release $tag already exists."
             exit 1
           fi
           echo "versao=$versao" >> "$GITHUB_OUTPUT"
@@ -76,10 +76,10 @@ jobs:
           java-version: 21
           cache: gradle
 
-      - name: Compilar e testar
+      - name: Build and test
         run: ./gradlew build --no-daemon
 
-      - name: Montar os arquivos da release
+      - name: Assemble the release files
         id: arquivos
         run: |
           jar="$(ls build/libs/iunacompat-*-mc*.jar)"
@@ -87,19 +87,19 @@ jobs:
           echo "jar=$jar" >> "$GITHUB_OUTPUT"
           awk -v v="${{ steps.tag.outputs.versao }}" '
             $0 ~ "^## " { emit = ($2 == v); next }
-            emit { print }' MUDANCAS.md > "$RUNNER_TEMP/notas.md"
+            emit { print }' CHANGELOG.md > "$RUNNER_TEMP/notas.md"
           if ! grep -q '[^[:space:]]' "$RUNNER_TEMP/notas.md"; then
-            echo "::error file=MUDANCAS.md::A seção '## ${{ steps.tag.outputs.versao }}' está vazia ou não existe."
+            echo "::error file=CHANGELOG.md::Section '## ${{ steps.tag.outputs.versao }}' is empty or missing."
             exit 1
           fi
           cat "$RUNNER_TEMP/notas.md"
 
-      - name: Atestar a procedência do jar
+      - name: Attest the jar's provenance
         uses: actions/attest@v4
         with:
           subject-path: ${{ steps.arquivos.outputs.jar }}
 
-      - name: Criar a release
+      - name: Create the release
         run: |
           gh release create "$GITHUB_REF_NAME" \
             "${{ steps.arquivos.outputs.jar }}" "${{ steps.arquivos.outputs.jar }}.sha256" \
