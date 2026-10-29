@@ -1,0 +1,12 @@
+# Gradle e IDEs
+/.gradle/
+/build/
+/run/
+/out/
+/.idea/
+*.iml
+/.vscode/
+/.kotlin/
+
+# Servidor de teste do teste de integração
+/servidor-teste/
