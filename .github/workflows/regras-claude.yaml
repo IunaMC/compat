@@ -1,7 +1,7 @@
 name: Regras do Claude
 
-# Checks that the common-rules block in CLAUDE.md matches the official text in
-# IunaMC/docs (a public repository, so the raw download needs no token).
+# Confere se o bloco de regras comuns do CLAUDE.md é igual ao texto oficial do
+# IunaMC/docs (como o repositório é público, o download do arquivo bruto não exige token).
 on:
   push:
     paths: [CLAUDE.md, .github/workflows/regras-claude.yaml]
@@ -23,12 +23,12 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - name: Download the official text and the script
+      - name: Baixar o texto oficial e o script
         run: |
           base=https://raw.githubusercontent.com/IunaMC/docs/main
           mkdir "$RUNNER_TEMP/oficial"
           curl -fsSL "$base/referencia/claude.md" -o "$RUNNER_TEMP/oficial/claude.md"
           curl -fsSL "$base/scripts/regras-comuns.py" -o "$RUNNER_TEMP/oficial/regras-comuns.py"
 
-      - name: Check the CLAUDE.md block
+      - name: Conferir o bloco do CLAUDE.md
         run: python3 "$RUNNER_TEMP/oficial/regras-comuns.py" --fonte "$RUNNER_TEMP/oficial/claude.md" conferir

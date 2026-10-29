@@ -1,8 +1,8 @@
 name: Validar
 
-# Builds, runs the unit tests and the contract test, and checks the version. The integration
-# test (which starts the pack's server) lives in the Integração workflow, so that a small change
-# does not download 1.5 GB of mods.
+# Compila o mod, executa os testes unitários e o teste de contrato e confere a versão. O teste de
+# integração, que sobe o servidor do pack, fica no workflow Integração, para que uma mudança
+# pequena não precise baixar 1,5 GB de mods.
 on:
   push:
     branches: [main, devel/**]
@@ -31,22 +31,22 @@ jobs:
           java-version: 21
           cache: gradle
 
-      # The wrapper jar runs on the builder's machine: check its hash against the official list.
+      # O jar do wrapper é executado na máquina de quem compila, por isso o hash dele é conferido com a lista oficial.
       - uses: gradle/actions/wrapper-validation@v6
 
-      - name: Check the version
+      - name: Conferir a versão
         run: |
           versao="$(sed -n 's/^mod_version=//p' gradle.properties)"
           if ! [[ "$versao" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
-            echo "::error file=gradle.properties::Invalid version: '$versao' (expected something like 1.2.3 or 1.2.3-beta.1)"
+            echo "::error file=gradle.properties::Versão inválida: '$versao' (o esperado é algo como 1.2.3 ou 1.2.3-beta.1)"
             exit 1
           fi
-          if ! grep -qE "^## ${versao//./\\.}( |$)" CHANGELOG.md; then
-            echo "::error file=CHANGELOG.md::Missing section '## $versao' in CHANGELOG.md"
+          if ! grep -qE "^## ${versao//./\\.}( |$)" MUDANCAS.md; then
+            echo "::error file=MUDANCAS.md::Falta a seção '## $versao' no MUDANCAS.md"
             exit 1
           fi
 
-      - name: Build and test
+      - name: Compilar e testar
         run: ./gradlew build --no-daemon
 
       - uses: actions/upload-artifact@v7
@@ -55,7 +55,7 @@ jobs:
           path: build/libs/iunacompat-*-mc*.jar
           retention-days: 14
 
-      - name: Test report
+      - name: Relatório dos testes
         if: failure()
         uses: actions/upload-artifact@v7
         with:
@@ -72,28 +72,28 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Check source branch and version
+      - name: Conferir a branch de origem e a versão
         env:
           ORIGEM: ${{ github.head_ref }}
         run: |
           if [[ "$ORIGEM" != devel/devel && "$ORIGEM" != docs/* ]]; then
-            echo "::error::main only accepts PRs from devel/devel or docs/*, and this one comes from '$ORIGEM'."
+            echo "::error::A main só aceita PRs da devel/devel ou de docs/*, e este vem de '$ORIGEM'."
             exit 1
           fi
           nova="$(sed -n 's/^mod_version=//p' gradle.properties)"
           antiga="$(git show origin/main:gradle.properties | sed -n 's/^mod_version=//p')"
           if [[ "$nova" == *-* ]]; then
-            echo "::error file=gradle.properties::main only accepts stable versions, and '$nova' is a beta."
+            echo "::error file=gradle.properties::A main só aceita versões estáveis, e '$nova' é beta."
             exit 1
           fi
           if ! git diff --quiet origin/main HEAD -- src build.gradle gradle.properties settings.gradle scripts/integration; then
             if [[ "$nova" == "$antiga" ]]; then
-              echo "::error file=gradle.properties::The code changed, but the version is still $antiga. Bump mod_version and write CHANGELOG.md."
+              echo "::error file=gradle.properties::O código mudou, mas a versão continua $antiga. Aumente o mod_version e escreva o MUDANCAS.md."
               exit 1
             fi
             if [[ "$(printf '%s\n%s\n' "$antiga" "$nova" | sort -V | tail -1)" != "$nova" ]]; then
-              echo "::error file=gradle.properties::Version $nova is lower than main's ($antiga)."
+              echo "::error file=gradle.properties::A versão $nova é menor que a da main ($antiga)."
               exit 1
             fi
           fi
-          echo "Source $ORIGEM, version $antiga -> $nova"
+          echo "Origem $ORIGEM, versão $antiga -> $nova"
