@@ -1,0 +1,28 @@
+# Regras de estilo da documentação da IunaMC. O padrão está em
+# referencia/padrao-de-escrita.md do IunaMC/docs; este arquivo é o mesmo em
+# todos os repositórios.
+config:
+  default: true
+  # Tamanho de linha livre: tabelas e links longos não quebram.
+  MD013: false
+  # HTML só em <details>/<summary> e nos marcadores que scripts usam.
+  MD033:
+    allowed_elements: [details, summary, br, img, a, p, div, picture, source]
+  # Listas numeradas 1. 2. 3.
+  MD029:
+    style: ordered
+  # Títulos iguais em seções diferentes (ex.: "Passos") são permitidos.
+  MD024:
+    siblings_only: true
+  # Títulos e listas colados ao texto anterior são o estilo da casa
+  # ("## Passos" seguido direto da lista, "**Rótulo:**" seguido da lista).
+  MD022: false
+  MD032: false
+  # Bloco de código sem linguagem é permitido para diagramas em texto.
+  MD040: false
+
+ignores:
+  - ".claude/**"
+  - "node_modules/**"
+  - "pack/**"
+  - "servidor-teste/**"
